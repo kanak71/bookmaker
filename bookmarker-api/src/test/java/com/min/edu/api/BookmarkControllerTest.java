@@ -15,10 +15,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+<<<<<<< HEAD
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+=======
+import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.assertj.MockMvcTester.MockMvcRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import static org.hamcrest.Matchers.is;
+
+>>>>>>> 6eda538 (init repository project)
 import com.min.edu.domain.Bookmark;
 import com.min.edu.repository.BookmarkRepository;
 
@@ -104,6 +116,37 @@ class BookmarkControllerTest {
 			.andExpect(jsonPath("$.hasPrevious", CoreMatchers.equalTo(hasPrevious)));
 		
 	}
+<<<<<<< HEAD
+=======
+	
+	@Test
+	public void shouldCreateBookmark() throws Exception{
+		
+		MvcResult result = mvc.perform(
+				MockMvcRequestBuilders.post("/api/bookmarks")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("""
+						{
+							"title":"Like Lion Study"
+						}
+						
+						""")
+				)
+				.andExpect(status().is4xxClientError())
+				.andExpect(jsonPath("$.status", is(400)))
+				.andExpect(jsonPath("$.field", is("url")))
+				.andExpect(jsonPath("$.message", is("URL은 필수 입력값 입니다")))
+				.andReturn();
+				
+		
+		String contentType = result.getResponse().getContentType();
+		System.out.println("Content-Type : \t" + contentType);
+		
+		String responseBody = result.getResponse().getContentAsString();
+		System.out.println("Response JSON : \t " + responseBody);
+		
+	}
+>>>>>>> 6eda538 (init repository project)
 
 }
 

@@ -8,6 +8,10 @@ import org.springframework.stereotype.Repository;
 
 import com.min.edu.domain.Bookmark;
 import com.min.edu.dto.BookmarkDto;
+<<<<<<< HEAD
+=======
+import com.min.edu.dto.BookmarksDto;
+>>>>>>> 6eda538 (init repository project)
 
 
 
@@ -21,6 +25,15 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 			select new com.min.edu.dto.BookmarkDto(b.id, b.title, b.url, b.createdAt) from Bookmark b
 			""")
 	Page<BookmarkDto> findByBookmarks(Pageable pageable);
+<<<<<<< HEAD
+=======
+	
+	@Query("""
+			select new com.min.edu.dto.BookmarkDto(b.id, b.title, b.url, b.createdAt) from Bookmark b
+			where lower(b.title) like lower(concat('%',:query,'%'))
+			""")
+	Page<BookmarkDto> searchByBookmarks(String query, Pageable pageable);
+>>>>>>> 6eda538 (init repository project)
 }
 
 

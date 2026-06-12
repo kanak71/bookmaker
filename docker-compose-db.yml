@@ -83,8 +83,3 @@ jobs:
         run: |
           echo "SERVER_SIDE_API_BASE_URL=${{ secrets.SERVER_SIDE_API_BASE_URL }}" > .env.local
           echo "NEXT_PUBLIC_CLIENT_SIDE_API_BASE_URL=${{ secrets.NEXT_PUBLIC_CLIENT_SIDE_API_BASE_URL }}" >> .env.local
-
-      - if: ${{ github.ref == 'refs/heads/main' }}
-        name: Build and Push Docker Image
-        run: |
-          docker build -f Docker
