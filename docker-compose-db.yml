@@ -1,85 +1,19 @@
-name: Java CI with Maven
+version: "3.9"
 
-# 어떤 Branch라도 코드가 push될 때마다 workflow 가 실행되도록 함
-on:
-  push:
-    branches:
-      - "**"
+services:
+  bookmarker-db:
+    image: postgres:14-alpine
+    environment:
+      POSTGRES_DB: appdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
 
-# Jobs를 통해서 workflow 단계 만들어 준다
-jobs:
-  build-bookmark-api:
-    runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: ./bookmarker-api
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-          cache: maven
-
-# Maven Build 작업시 권한을 설정 접근 허용 +x 실행 권한
-      - name: Build with Maven
-        run: |
-          chmod +x mvnw
-          ./mvnw verify
-
-# docker tty 명령어를 사용하기 위한 환경설정
-      - name: Build and Push Image
-        if: github.ref == 'refs/heads/main'
-        # 현재 실행되고 있는 OS는 내 local PC가 아니라 github의 PC이다. 그렇기 때문에 dockerBuild는 필요 없고 build만 하는게 좋다
-        run: |
-          ./mvnw clean package jib:dockerBuild -DskipTests
-          docker login \
-            -u ${{ secrets.DOCKER_USERNAME }} \
-            -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build \
-            -t myimage:latest .
-          docker tag myimage:latest ${{ secrets.DOCKER_USERNAME }}/bookmarker-api:latest
-          docker push \
-            ${{ secrets.DOCKER_USERNAME }}/bookmarker-api:latest
-
-
-#######################################################
-#         bookmar-ui-nextjs 빌드 및 docker 배포         #
-#######################################################
-  build-bookmarker-ui:
-    name: Build bookmarker-ui
-    runs-on: ubuntu-latest
-    defaults:
-      # 배포된 git repository의 폴더명
-      run:
-        working-directory: ./bookmark-ui-nextjs
-    steps:
-      #코드체크아웃
-      - name: Checkout repository
-        uses: actions/setup-checkout@v4
-
-      #Node.js 설정
-      - name: Setup Node.js 24
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-      
-      #의존성 설치
-      - name: Install dependecies
-        run: npm ci
-      
-      #Next.js 빌드
-      - name: Next.js Build
-        run: npm run build
-      
-      #.env.local 파일 설정
-      # 복사해서 사용하지 않는 이유는 UI의 .gitignore 파일은 .env* 파일을 제외 한다
-      # 파일을 작성해서 넣어 준다 echo 문서를 만들어 준다
-      - name: Create .env 파일 생성
-        run: |
-          echo "SERVER_SIDE_API_BASE_URL=${{ secrets.SERVER_SIDE_API_BASE_URL }}" > .env.local
-          echo "NEXT_PUBLIC_CLIENT_SIDE_API_BASE_URL=${{ secrets.NEXT_PUBLIC_CLIENT_SIDE_API_BASE_URL }}" >> .env.local
+    ports:
+      - "15432:5432"
+ 
+ # DB가 실행되고 초기화 되고 healthy Check
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5

@@ -60,21 +60,17 @@ jobs:
     steps:
       #코드체크아웃
       - name: Checkout repository
-        uses: actions/setup-checkout@v4
+        uses: actions/checkout@v4
 
       #Node.js 설정
       - name: Setup Node.js 24
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 22
       
       #의존성 설치
       - name: Install dependecies
         run: npm ci
-      
-      #Next.js 빌드
-      - name: Next.js Build
-        run: npm run build
       
       #.env.local 파일 설정
       # 복사해서 사용하지 않는 이유는 UI의 .gitignore 파일은 .env* 파일을 제외 한다
@@ -84,7 +80,14 @@ jobs:
           echo "SERVER_SIDE_API_BASE_URL=${{ secrets.SERVER_SIDE_API_BASE_URL }}" > .env.local
           echo "NEXT_PUBLIC_CLIENT_SIDE_API_BASE_URL=${{ secrets.NEXT_PUBLIC_CLIENT_SIDE_API_BASE_URL }}" >> .env.local
 
+      #Next.js 빌드
+      - name: Next.js Build
+        run: npm run build
+
+      # 메인 브렌치 일경우 Docker 이미지 빌드 및 배포
       - if: ${{ github.ref == 'refs/heads/main' }}
-        name: Build and Push Docker Image
+        name: Build and Push Docker image
         run: |
-          docker build -f Docker
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker build -f Dockerfile.ui -t ${{ secrets.DOCKER_USERNAME }}/bookmark-ui-nextjs
+          docker push ${{ secrets.DOCKER_USERNAME }}/bookmark-ui-nextjs

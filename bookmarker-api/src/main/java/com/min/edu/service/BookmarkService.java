@@ -1,9 +1,6 @@
 package com.min.edu.service;
 
-<<<<<<< HEAD
-=======
 import java.time.Instant;
->>>>>>> 6eda538 (init repository project)
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -12,25 +9,23 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-<<<<<<< HEAD
-=======
+
 import org.springframework.web.bind.annotation.RequestBody;
->>>>>>> 6eda538 (init repository project)
+
 
 import com.min.edu.domain.Bookmark;
 import com.min.edu.dto.BookmarkDto;
 import com.min.edu.dto.BookmarksDto;
-<<<<<<< HEAD
+
 import com.min.edu.mapper.BookmarkMapper;
 import com.min.edu.repository.BookmarkRepository;
 
-=======
+
 import com.min.edu.dto.CreateBookmarkRequest;
 import com.min.edu.mapper.BookmarkMapper;
 import com.min.edu.repository.BookmarkRepository;
 
 import jakarta.validation.Valid;
->>>>>>> 6eda538 (init repository project)
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -63,9 +58,7 @@ public class BookmarkService {
 		return new BookmarksDto(bookmarkPage);
 		
 	}
-<<<<<<< HEAD
-=======
-	
+
 	@Transactional(readOnly = true)
 	public BookmarksDto searchBookmarks(String query, Integer page) {
 		int pageNo = page<1 ? 0 : page-1;
@@ -83,7 +76,6 @@ public class BookmarkService {
 		
 		return bookmarkMapper.toDto(savedBookmark);
 	}
->>>>>>> 6eda538 (init repository project)
 }
 
 
